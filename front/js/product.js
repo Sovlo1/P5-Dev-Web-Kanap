@@ -8,6 +8,8 @@ let productPrice = document.getElementById("price");
 let productDescription = document.getElementById("description");
 let colorsContainer = document.getElementById("colors");
 let addToCart = document.getElementById("addToCart");
+let quantity = document.getElementById("quantity");
+let colors = document.getElementById("colors");
 
 const product = async function () {
   await fetch(`http://localhost:3000/api/products/${id}`)
@@ -21,6 +23,7 @@ const productInDepth = function () {
   for (i = 0; i < fetchedProduct.colors.length; i += 1) {
     let productColors = document.createElement("option");
     colorsContainer.append(productColors);
+    productColors.setAttribute("value", fetchedProduct.colors[i]);
     productColors.textContent = fetchedProduct.colors[i];
   }
 };
@@ -37,12 +40,51 @@ const productInfo = async function () {
 
 productInfo();
 
-function populateStorage() {
-  localStorage.setItem("product", id);
-  localStorage.setItem("quantity", document.getElementById("quantity").value);
-  localStorage.setItem("color", document.getElementById("colors").value);
-}
+let couchAdd;
+let couchCart = [];
+let couchName;
+let couchQuantity;
+let couchColor;
 
-addToCart.addEventListener("click", function() {
-  populateStorage()
-})
+const populateStorage = function () {
+  localStorage.setItem("product", id);
+  localStorage.setItem("quantity", quantity.value);
+  localStorage.setItem("color", colors.value);
+  couchName = localStorage.getItem("product");
+  couchQuantity = +localStorage.getItem("quantity");
+  couchColor = localStorage.getItem("color");
+};
+
+const couchObj = function () {
+  couchAdd = {
+    couchName: couchName,
+    couchQuantity: couchQuantity,
+    couchColor: couchColor,
+  };
+};
+
+addToCart.addEventListener("click", function () {
+  populateStorage();
+  test();
+  // couchCart.push(couchAdd);
+  // localStorage.setItem("couchCart", couchCart);
+});
+
+// const test = function () {
+//   if (!localStorage.getItem("couchCart")) {
+//     couchCart.push(couchAdd);
+//     localStorage.setItem("couchCart", couchCart);
+//   } else if (
+//     couchAdd.couchName !== id ||
+//     couchAdd.couchColor !== colors.value
+//   ) {
+//     couchCart.push(couchAdd);
+//     localStorage.setItem("couchCart", couchCart);
+//   } else if (
+//     couchAdd.couchName === id ||
+//     couchAdd.couchColor === colors.value
+//   ) {
+//     couchAdd.couchQuantity += parseInt(quantity.value, 10);
+//     couchCart.push(couchAdd);
+//   }
+// };
