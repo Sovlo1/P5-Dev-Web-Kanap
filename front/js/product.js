@@ -7,6 +7,7 @@ let productName = document.getElementById("title");
 let productPrice = document.getElementById("price");
 let productDescription = document.getElementById("description");
 let colorsContainer = document.getElementById("colors");
+let addToCart = document.getElementById("addToCart");
 
 const product = async function () {
   await fetch(`http://localhost:3000/api/products/${id}`)
@@ -35,3 +36,13 @@ const productInfo = async function () {
 };
 
 productInfo();
+
+function populateStorage() {
+  localStorage.setItem("product", id);
+  localStorage.setItem("quantity", document.getElementById("quantity").value);
+  localStorage.setItem("color", document.getElementById("colors").value);
+}
+
+addToCart.addEventListener("click", function() {
+  populateStorage()
+})
