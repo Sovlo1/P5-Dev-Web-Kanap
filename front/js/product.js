@@ -40,7 +40,6 @@ const productInfo = async function () {
 
 productInfo();
 
-let couchAdd;
 let couchCart = [];
 let couchName;
 let couchQuantity;
@@ -56,16 +55,19 @@ const populateStorage = function () {
 };
 
 const couchObj = function () {
-  couchAdd = {
+  let couchAdd = {
     couchName: couchName,
     couchQuantity: couchQuantity,
     couchColor: couchColor,
   };
+  couchCart.push(couchAdd);
+  let couchCartString = JSON.stringify(couchCart)
+  localStorage.setItem("couchCart", couchCartString);
 };
 
 addToCart.addEventListener("click", function () {
   populateStorage();
-  test();
+  couchObj()
   // couchCart.push(couchAdd);
   // localStorage.setItem("couchCart", couchCart);
 });
