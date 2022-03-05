@@ -40,11 +40,19 @@ const productInfo = async function () {
 
 productInfo();
 
+/*********************************************************************
+ ****************************PARTIE 2**********************************
+ *********************************************************************/
+
 let couchCart = [];
 let couchName;
 let couchQuantity;
 let couchColor;
+let couchCartStringed;
+let couchCartParsed;
+let couchAdd;
 
+//Fonction qui ajoute les données du canapé choisi au localstorage
 const populateStorage = function () {
   localStorage.setItem("product", id);
   localStorage.setItem("quantity", quantity.value);
@@ -54,39 +62,53 @@ const populateStorage = function () {
   couchColor = localStorage.getItem("color");
 };
 
+//Fonction qui ajoute les données du localstorage à l'objet couchAdd
 const couchObj = function () {
-  let couchAdd = {
+  couchAdd = {
     couchName: couchName,
     couchQuantity: couchQuantity,
     couchColor: couchColor,
   };
-  couchCart.push(couchAdd);
-  let couchCartString = JSON.stringify(couchCart)
-  localStorage.setItem("couchCart", couchCartString);
+};
+
+//Fonction qui vérifie que les données de couchAdd sont valides et pousse l'objet dans couchCart
+const checkCouchValid = function () {
+  if (couchAdd.couchQuantity > 0 && couchAdd.couchColor !== "") {
+    IncrementArr();
+  }
+};
+
+const IncrementArr = function () {
+  if (localStorage.getItem("couchCart") !== null) {
+    couchCartParsed = JSON.parse(localStorage.getItem("couchCart"));
+    isPresent = false;
+    couchCartParsed.map(function (e) {
+      if (
+        e.couchName === couchAdd.couchName &&
+        e.couchColor === couchAdd.couchColor
+      ) {
+        e.couchQuantity += couchQuantity;
+        couchCartStringed = JSON.stringify(couchCartParsed);
+        localStorage.setItem("couchCart", couchCartStringed);
+        isPresent = true;
+      } else {
+        isPresent = false;
+      }
+    });
+    if (!isPresent) {
+      couchCartParsed.push(couchAdd);
+      couchCartStringed = JSON.stringify(couchCartParsed);
+      localStorage.setItem("couchCart", couchCartStringed);
+    }
+  } else {
+    couchCart.push(couchAdd);
+    couchCartStringed = JSON.stringify(couchCart);
+    localStorage.setItem("couchCart", couchCartStringed);
+  }
 };
 
 addToCart.addEventListener("click", function () {
   populateStorage();
-  couchObj()
-  // couchCart.push(couchAdd);
-  // localStorage.setItem("couchCart", couchCart);
+  couchObj();
+  checkCouchValid();
 });
-
-// const test = function () {
-//   if (!localStorage.getItem("couchCart")) {
-//     couchCart.push(couchAdd);
-//     localStorage.setItem("couchCart", couchCart);
-//   } else if (
-//     couchAdd.couchName !== id ||
-//     couchAdd.couchColor !== colors.value
-//   ) {
-//     couchCart.push(couchAdd);
-//     localStorage.setItem("couchCart", couchCart);
-//   } else if (
-//     couchAdd.couchName === id ||
-//     couchAdd.couchColor === colors.value
-//   ) {
-//     couchAdd.couchQuantity += parseInt(quantity.value, 10);
-//     couchCart.push(couchAdd);
-//   }
-// };
