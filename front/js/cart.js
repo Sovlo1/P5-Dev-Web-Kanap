@@ -60,17 +60,15 @@ const addItemSettings = function (storedItem) {
   cartItemQuantityInput.setAttribute("min", "1");
   cartItemQuantityInput.setAttribute("max", "100");
   cartItemQuantityInput.setAttribute("value", storedItem.couchQuantity);
-  quantityInputChange = document
-    .querySelector(
-      `[data-id="${storedItem.couchName}"][data-color="${storedItem.couchColor}"] input.itemQuantity`
-    )
-    .addEventListener("change", function () {
-      storedItem.couchQuantity = parseInt(this.value, 10);
-      storedCartStringed = JSON.stringify(storedCart);
-      localStorage.setItem("couchCart", storedCartStringed);
-    });
+  cartItemQuantityInput.addEventListener("change", function () {
+    storedItem.couchQuantity = parseInt(this.value, 10);
+    storedCartStringed = JSON.stringify(storedCart);
+    localStorage.setItem("couchCart", storedCartStringed);
+    updateTotalQuantity();
+    updateTotalPrice();
+  });
 };
-const removeItemSettings = function () {
+const removeItemSettings = function (storedItem) {
   cartItemContentSettings.append(cartItemContentSettingsDelete);
   cartItemContentSettingsDelete.classList.add(
     "cart__item__content__settings__delete"
@@ -78,6 +76,51 @@ const removeItemSettings = function () {
   cartItemContentSettingsDelete.append(cartItemDelete);
   cartItemDelete.classList.add("deleteItem");
   cartItemDelete.textContent = "Supprimer";
+  cartItemDelete.addEventListener("click", function () {
+    itemToRemove = document.querySelector(
+      `[data-id="${storedItem.couchName}"][data-color="${storedItem.couchColor}"]`
+    );
+    itemToRemove.remove();
+    updatedStoredCart = storedCart.filter(
+      (item) =>
+        item.couchName != storedItem.couchName ||
+        item.couchColor != storedItem.couchColor
+    );
+    storedCart = updatedStoredCart;
+    storedCartStringed = JSON.stringify(storedCart);
+    localStorage.setItem("couchCart", storedCartStringed);
+    updateTotalQuantity();
+    updateTotalPrice();
+  });
+};
+
+const updateTotalQuantity = function () {
+  if (storedCart.length == 0) {
+    totalQuantity.textContent = 0;
+  } else {
+    totalQuantity.textContent = storedCart.reduce(
+      (sum, current) => sum + current.couchQuantity,
+      0
+    );
+  }
+};
+
+const updateTotalPrice = async function () {
+  let priceFull = 0;
+  if (storedCart.length == 0) {
+    totalPrice.textContent = 0;
+  } else {
+    for (i = 0; i < storedCart.length; i += 1) {
+      await fetch(
+        `http://localhost:3000/api/products/${storedCart[i].couchName}`
+      )
+        .then((res) => res.json())
+        .then((fetched) => (fetchedProduct = fetched));
+      price = (storedCart[i].couchQuantity * fetchedProduct.price) / 10;
+      priceFull += price;
+      totalPrice.textContent = priceFull + "0";
+    }
+  }
 };
 
 const fillCart = async function () {
@@ -103,8 +146,16 @@ const fillCart = async function () {
     await addItemImage();
     await addItemDescription(storedCart[i]);
     await addItemSettings(storedCart[i]);
-    await removeItemSettings();
+    await removeItemSettings(storedCart[i]);
   }
 };
 
+const loadPage = function () {
 fillCart();
+updateTotalQuantity();
+updateTotalPrice();
+}
+
+loadPage();
+
+
