@@ -116,9 +116,9 @@ const updateTotalPrice = async function () {
       )
         .then((res) => res.json())
         .then((fetched) => (fetchedProduct = fetched));
-      price = (storedCart[i].couchQuantity * fetchedProduct.price) / 10;
+      price = (storedCart[i].couchQuantity * fetchedProduct.price);
       priceFull += price;
-      totalPrice.textContent = priceFull + "0";
+      totalPrice.textContent = (parseFloat(priceFull, 10)/10);
     }
   }
 };
@@ -150,8 +150,8 @@ const fillCart = async function () {
   }
 };
 
-const loadPage = function () {
-fillCart();
+const loadPage = async function () {
+await fillCart();
 updateTotalQuantity();
 updateTotalPrice();
 }
