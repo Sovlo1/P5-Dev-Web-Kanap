@@ -1,8 +1,3 @@
-// article > div > img
-//         > div > div > h2 p p
-//               > div > div > p input
-//                     > div > p
-
 //Variable qui contiendra les données du produit à fetch
 let fetchedProduct;
 
@@ -116,9 +111,9 @@ const updateTotalPrice = async function () {
       )
         .then((res) => res.json())
         .then((fetched) => (fetchedProduct = fetched));
-      price = (storedCart[i].couchQuantity * fetchedProduct.price);
+      price = storedCart[i].couchQuantity * fetchedProduct.price;
       priceFull += price;
-      totalPrice.textContent = (parseFloat(priceFull, 10)/10);
+      totalPrice.textContent = parseFloat(priceFull, 10) / 10;
     }
   }
 };
@@ -151,11 +146,133 @@ const fillCart = async function () {
 };
 
 const loadPage = async function () {
-await fillCart();
-updateTotalQuantity();
-updateTotalPrice();
-}
+  await fillCart();
+  updateTotalQuantity();
+  updateTotalPrice();
+};
 
 loadPage();
 
+let firstName = document.getElementById("firstName");
+let lastName = document.getElementById("lastName");
+let address = document.getElementById("address");
+let city = document.getElementById("city");
+let email = document.getElementById("email");
+let emailRegex = /^[\.\-_0-9a-zçéèêëàâîïôùû]+@([a-zçéèêëàâîïôùû])+\.[a-z]+$/i;
+let firstNameRegex = /^[a-zçéèêëàâîïôùû]+([-][a-zçéèêëàâîïôùû]+)?$/i;
+let lastNameRegex = /^[a-zçéèêëàâîïôùû]+([ ][a-zçéèêëàâîïôùû]+)?$/i;
+let cityRegex = /^([a-zçéèêëàâîïôùû]{2,})+([-][a-zçéèêëàâîïôùû]+)*$/i;
+let addressRegex = /^[0-9a-zçéèêëàâîïôùû]+([ ][a-zçéèêëàâîïôùû]+)+$/i;
 
+let order = document.getElementById("order");
+let storedId;
+
+order.addEventListener("click", async function (e) {
+  e.preventDefault();
+  checkFirstName();
+  checkLastName();
+  checkAddress();
+  checkCity();
+  checkEmail();
+  if (isValid) {
+    await fillClientCart();
+    await fillProductList();
+    await fillOrderValidation();
+    await orderOver();
+    document.location.href = `./confirmation.html?id=${storedId.orderId}`;
+  }
+});
+
+const checkFirstName = function () {
+  firstNameValue = firstName.value;
+  error = document.getElementById("firstNameErrorMsg");
+  isValid = firstNameRegex.test(firstNameValue);
+  if (!isValid) {
+    error.textContent = "Veuillez saisir un prénom valide.";
+  } else {
+    error.textContent = "";
+  }
+};
+
+const checkLastName = function () {
+  lastNameValue = lastName.value;
+  error = document.getElementById("lastNameErrorMsg");
+  isValid = lastNameRegex.test(lastNameValue);
+  if (!isValid) {
+    error.textContent = "Veuillez saisir un nom valide.";
+  } else {
+    error.textContent = "";
+  }
+};
+
+const checkAddress = function () {
+  addressValue = address.value;
+  error = document.getElementById("addressErrorMsg");
+  isValid = addressRegex.test(addressValue);
+  if (!isValid) {
+    error.textContent = "Veuillez saisir une adresse valide.";
+  } else {
+    error.textContent = "";
+  }
+};
+
+const checkCity = function () {
+  cityValue = city.value;
+  error = document.getElementById("cityErrorMsg");
+  isValid = cityRegex.test(cityValue);
+  if (!isValid) {
+    error.textContent = "Veuillez saisir une ville valide.";
+  } else {
+    error.textContent = "";
+  }
+};
+
+const checkEmail = function () {
+  emailValue = email.value;
+  error = document.getElementById("emailErrorMsg");
+  isValid = emailRegex.test(emailValue);
+  if (!isValid) {
+    error.textContent = "Veuillez saisir une adresse email valide.";
+  } else {
+    error.textContent = "";
+  }
+};
+
+let productList = [];
+let clientCart;
+let orderValidation;
+
+let fillProductList = function () {
+  for (i = 0; i < storedCart.length; i += 1) {
+    productList.push(storedCart[i].couchName);
+  }
+};
+
+let fillClientCart = function () {
+  clientCart = {
+    contact: {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: address.value,
+      city: city.value,
+      email: email.value,
+    },
+    products: productList,
+  };
+};
+
+let fillOrderValidation = function () {
+  orderValidation = {
+    method: "POST",
+    body: JSON.stringify(clientCart),
+    headers: {
+      "Content-type": "application/json",
+    },
+  };
+};
+
+const orderOver = async function () {
+  await fetch("http://localhost:3000/api/products/order", orderValidation)
+    .then((res) => res.json())
+    .then((storeId) => (storedId = storeId));
+};
