@@ -159,10 +159,10 @@ let address = document.getElementById("address");
 let city = document.getElementById("city");
 let email = document.getElementById("email");
 let emailRegex = /^[\.\-_0-9a-zçéèêëàâîïôùû]+@([a-zçéèêëàâîïôùû])+\.[a-z]+$/i;
-let firstNameRegex = /^[a-zçéèêëàâîïôùû]+([-][a-zçéèêëàâîïôùû]+)?$/i;
-let lastNameRegex = /^[a-zçéèêëàâîïôùû]+([ ][a-zçéèêëàâîïôùû]+)?$/i;
-let cityRegex = /^([a-zçéèêëàâîïôùû]{2,})+([-][a-zçéèêëàâîïôùû]+)*$/i;
-let addressRegex = /^[0-9a-zçéèêëàâîïôùû]+([ ][a-zçéèêëàâîïôùû]+)+$/i;
+let firstNameRegex = /^([a-zçéèêëàâîïôùû]{2,})+([-][a-zçéèêëàâîïôùû]+)?$/i;
+let lastNameRegex = /^([a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëàâîïôùû]+)?$/i;
+let cityRegex = /^([a-zçéèêëàâîïôùû]{2,})+([\- ][a-zçéèêëàâîïôùû]+)*$/i;
+let addressRegex = /^([0-9a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëàâîïôùû]+)+$/i;
 
 let order = document.getElementById("order");
 let storedId;
