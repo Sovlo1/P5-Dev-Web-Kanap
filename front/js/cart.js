@@ -153,6 +153,10 @@ const loadPage = async function () {
 
 loadPage();
 
+////////////////////////////////////////////////////////
+////////////////////////FORM////////////////////////////
+////////////////////////////////////////////////////////
+
 let firstName = document.getElementById("firstName");
 let lastName = document.getElementById("lastName");
 let address = document.getElementById("address");
@@ -167,21 +171,9 @@ let addressRegex = /^([0-9a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëà
 let order = document.getElementById("order");
 let storedId;
 
-order.addEventListener("click", async function (e) {
-  e.preventDefault();
-  checkFirstName();
-  checkLastName();
-  checkAddress();
-  checkCity();
-  checkEmail();
-  if (isValid) {
-    await fillClientCart();
-    await fillProductList();
-    await fillOrderValidation();
-    await orderOver();
-    document.location.href = `./confirmation.html?id=${storedId.orderId}`;
-  }
-});
+let productList = [];
+let clientCart;
+let orderValidation;
 
 const checkFirstName = function () {
   firstNameValue = firstName.value;
@@ -192,6 +184,7 @@ const checkFirstName = function () {
   } else {
     error.textContent = "";
   }
+  return isValid;
 };
 
 const checkLastName = function () {
@@ -203,6 +196,7 @@ const checkLastName = function () {
   } else {
     error.textContent = "";
   }
+  return isValid;
 };
 
 const checkAddress = function () {
@@ -214,6 +208,7 @@ const checkAddress = function () {
   } else {
     error.textContent = "";
   }
+  return isValid;
 };
 
 const checkCity = function () {
@@ -225,6 +220,7 @@ const checkCity = function () {
   } else {
     error.textContent = "";
   }
+  return isValid;
 };
 
 const checkEmail = function () {
@@ -236,11 +232,8 @@ const checkEmail = function () {
   } else {
     error.textContent = "";
   }
+  return isValid;
 };
-
-let productList = [];
-let clientCart;
-let orderValidation;
 
 let fillProductList = function () {
   for (i = 0; i < storedCart.length; i += 1) {
@@ -276,3 +269,20 @@ const orderOver = async function () {
     .then((res) => res.json())
     .then((storeId) => (storedId = storeId));
 };
+
+order.addEventListener("click", async function (e) {
+  isValid = true;
+  e.preventDefault();
+  isValid = isValid && checkFirstName();
+  isValid = isValid && checkLastName();
+  isValid = isValid && checkAddress();
+  isValid = isValid && checkCity();
+  isValid = isValid && checkEmail();
+  if (isValid) {
+    await fillClientCart();
+    await fillProductList();
+    await fillOrderValidation();
+    await orderOver();
+    document.location.href = `./confirmation.html?id=${storedId.orderId}`;
+  }
+});
