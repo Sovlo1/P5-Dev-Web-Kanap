@@ -9,7 +9,14 @@ let cityErrorMsg = document.getElementById("cityErrorMsg");
 let emailErrorMsg = document.getElementById("emailErrorMsg");
 
 //Variable contenant les données du panier qui sont stockées dans le localStorage
-let storedCart = JSON.parse(localStorage.getItem("couchCart"));
+let storedCart = [];
+
+//Fonction permettant de vérifier si un panier est stocké dans le localStorage
+const checkStoredCart = function () {
+  if (localStorage.getItem("couchCart")) {
+    storedCart = JSON.parse(localStorage.getItem("couchCart"));
+  }
+};
 
 //Fonction qui sera appelée plus tard et permettant de récupérer les données d'un ou plusieurs produits dans un tableau
 const getProduct = async function () {
@@ -130,6 +137,7 @@ const fillDeleteItemSettings = function (storedItem) {
 //Fonction appelant toutes les fonction créées jusqu'alors et permettant la création d'un article dans le DOM contenant
 //toutes les informations du ou des produits présent(s) dans notre panier
 const fillCart = async function () {
+  checkStoredCart();
   for (i = 0; i < storedCart.length; i += 1) {
     await getProduct();
     createItem(storedCart[i]);
@@ -170,13 +178,10 @@ const updateTotalPrice = async function () {
   }
 };
 
-//Fonction contenant fillCart() qui contient déja toutes les fonction permettant de remplir le DOM mais...
+//Fonction contenant fillCart() qui contient déja toutes les fonction permettant de remplir le DOM et...
 const loadPage = async function () {
-  //...qui ne s'éxécute qu'à la condition que storedCart ne soit pas null...
-  if (storedCart) {
-    await fillCart();
-  }
-  //...on met à jour le prix total et la quantité totale peu importe l'état de storedCart...
+  await fillCart();
+  //...on met à jour le prix total et la quantité totale...
   updateTotalQuantity();
   updateTotalPrice();
 };
@@ -188,14 +193,17 @@ loadPage();
 ////////////////////////FORMULAIRE////////////////////////////
 //////////////////////////////////////////////////////////////
 
+//Variables contenant les regex qui serviront à s'assurer que les données entrées dans le formulaire sont correctes
 let emailRegex = /^[\.\-_0-9a-z]+@([a-z])+\.[a-z]+$/i;
 let firstNameRegex = /^([a-zçéèêëàâîïôùû]{2,})+([-][a-zçéèêëàâîïôùû]+)?$/i;
 let lastNameRegex = /^([a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëàâîïôùû]+)?$/i;
 let cityRegex = /^([a-zçéèêëàâîïôùû]{2,})+([\- ][a-zçéèêëàâîïôùû]+)*$/i;
 let addressRegex = /^([0-9a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëàâîïôùû]+)+$/i;
 
+//Variable indiquant l'emplacement d'un bouton sur lequel on ajoutera un event listener
 let order = document.getElementById("order");
 
+//Fonction pour vérifier la validité du prénom saisi
 const checkFirstName = function () {
   firstName = document.getElementById("firstName");
   firstNameValue = firstName.value;
@@ -209,6 +217,7 @@ const checkFirstName = function () {
   return isValid;
 };
 
+//Fonction pour vérifier la validité du nom saisi
 const checkLastName = function () {
   lastName = document.getElementById("lastName");
   lastNameValue = lastName.value;
@@ -222,6 +231,7 @@ const checkLastName = function () {
   return isValid;
 };
 
+//Fonction pour vérifier la validité de l'adresse saisie
 const checkAddress = function () {
   address = document.getElementById("address");
   addressValue = address.value;
@@ -235,6 +245,7 @@ const checkAddress = function () {
   return isValid;
 };
 
+//Fonction pour vérifier la validité de la ville saisie
 const checkCity = function () {
   city = document.getElementById("city");
   cityValue = city.value;
@@ -248,6 +259,7 @@ const checkCity = function () {
   return isValid;
 };
 
+//Fonction pour vérifier la validité de l'email saisi
 const checkEmail = function () {
   email = document.getElementById("email");
   emailValue = email.value;
@@ -261,14 +273,18 @@ const checkEmail = function () {
   return isValid;
 };
 
+//Tableau dans lequel seront ajoutés les produits à acheter au moment de l'envoi du formulaire
 let productList = [];
 
+//Fonction servant à pousser les produits à acheter dans le tableau déclaré juste avant
 let fillProductList = function () {
-    for (i = 0; i < storedCart.length; i += 1) {
-      productList.push(storedCart[i].couchName);
-    }
+  for (i = 0; i < storedCart.length; i += 1) {
+    productList.push(storedCart[i].couchName);
+  }
 };
 
+//Fonction qui va compléter les données de l'objet clientCart et contenant 
+//les infos utilisateur ainsi que la liste des produits à acheter
 let fillClientCart = function () {
   clientCart = {
     contact: {
@@ -282,6 +298,8 @@ let fillClientCart = function () {
   };
 };
 
+//Fonction pour compléter les données de l'objet orderValidation avec la version stringify de l'objet clientCart ainsi
+//que les instructions pour faire la méthode POST à l'API
 let fillOrderValidation = function () {
   orderValidation = {
     method: "POST",
@@ -292,14 +310,19 @@ let fillOrderValidation = function () {
   };
 };
 
-const orderOver = async function () {
+//Fonction servant à faire la méthode POST à l'API en utilisant les données de la fonc
+const completeOrder = async function () {
   await fetch("http://localhost:3000/api/products/order", orderValidation)
     .then((res) => res.json())
+    //Nous permet de stocker la réponse de l'api dans une variable storeId
     .then((storeId) => (storedId = storeId));
 };
 
+//Event listener du bouton "commander" qui réutilise toutes les fonctions créées dans la partie formulaire
 order.addEventListener("click", async function (e) {
   e.preventDefault();
+  //Nous permet de vérifier la validité de l'intégralité des données utilisateurs, si un élément n'est pas valide
+  //il ne sera pas possible de procéder à la suite de la fonction
   isValid =
     checkFirstName() &&
     checkLastName() &&
@@ -307,11 +330,15 @@ order.addEventListener("click", async function (e) {
     checkCity() &&
     checkEmail();
   if (isValid) {
-    fillClientCart();
     fillProductList();
-    fillOrderValidation();
-    await orderOver();
-    document.location.href = `./confirmation.html?id=${storedId.orderId}`;
-    localStorage.clear();
+    //Nous permet de nous assurer que personne ne puisse valider un formulaire avec un panier vide
+    if (productList.length > 0) {
+      fillClientCart();
+      fillOrderValidation();
+      await completeOrder();
+      //Nous permet d'accéder à la page de confirmation qui contiendra dans son url l'id obtenu avec l'API
+      document.location.href = `./confirmation.html?id=${storedId.orderId}`;
+      localStorage.clear();
+    }
   }
 });
