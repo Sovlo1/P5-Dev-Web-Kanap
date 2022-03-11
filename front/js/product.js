@@ -1,6 +1,5 @@
 let params = new URLSearchParams(document.location.search);
 let id = params.get("id");
-let fetchedProduct;
 
 let imageContainer = document.querySelector(".item__img");
 let productName = document.getElementById("title");
@@ -17,9 +16,14 @@ const product = async function () {
     .then((fetched) => (fetchedProduct = fetched));
 };
 
-const productInDepth = function () {
+const addProductImage = function () {
   productImage = document.createElement("img");
   imageContainer.appendChild(productImage);
+  productImage.src = fetchedProduct.imageUrl;
+  productImage.alt = fetchedProduct.altTxt;
+};
+
+const productColors = function () {
   for (i = 0; i < fetchedProduct.colors.length; i += 1) {
     let productColors = document.createElement("option");
     colorsContainer.append(productColors);
@@ -28,29 +32,22 @@ const productInDepth = function () {
   }
 };
 
+const productText = function () {
+  productName.textContent = fetchedProduct.name;
+  productPrice.textContent = (fetchedProduct.price / 10).toFixed(2);
+  productDescription.textContent = fetchedProduct.description;
+};
+
 const productInfo = async function () {
   await product();
-  await productInDepth();
-  productImage.src = fetchedProduct.imageUrl;
-  productImage.alt = fetchedProduct.altTxt;
-  productName.textContent = fetchedProduct.name;
-  productPrice.textContent = fetchedProduct.price / 10 + "0";
-  productDescription.textContent = fetchedProduct.description;
+  addProductImage();
+  productColors();
+  productText();
 };
 
 productInfo();
 
-/*********************************************************************
- ****************************PARTIE 2**********************************
- *********************************************************************/
-
 let couchCart = [];
-let couchName;
-let couchQuantity;
-let couchColor;
-let couchCartStringed;
-let couchCartParsed;
-let couchAdd;
 
 //Fonction qui ajoute les données du canapé choisi au localstorage
 const populateStorage = function () {
@@ -74,32 +71,30 @@ const couchObj = function () {
 //Fonction qui vérifie que les données de couchAdd sont valides et pousse l'objet dans couchCart
 const checkCouchValid = function () {
   if (couchAdd.couchQuantity > 0 && couchAdd.couchColor !== "") {
-    IncrementArr();
+    addCouchTotal();
   }
 };
 
-const IncrementArr = function () {
-  if (localStorage.getItem("couchCart") !== null) {
-    couchCartParsed = JSON.parse(localStorage.getItem("couchCart"));
-    isPresent = false;
-    couchCartParsed.map(function (e) {
+const addCouchTotal = function () {
+  if (localStorage.getItem("couchCart")) {
+    const couchCartParsed = JSON.parse(localStorage.getItem("couchCart"));
+    const existingItem = couchCartParsed.find(function (cartItem) {
       if (
-        e.couchName === couchAdd.couchName &&
-        e.couchColor === couchAdd.couchColor
+        cartItem.couchName === couchAdd.couchName &&
+        cartItem.couchColor === couchAdd.couchColor
       ) {
-        e.couchQuantity += couchQuantity;
-        couchCartStringed = JSON.stringify(couchCartParsed);
-        localStorage.setItem("couchCart", couchCartStringed);
-        isPresent = true;
+        return true;
       } else {
-        isPresent = false;
+        return false;
       }
     });
-    if (!isPresent) {
+    if (existingItem) {
+      existingItem.couchQuantity += couchQuantity;
+    } else {
       couchCartParsed.push(couchAdd);
-      couchCartStringed = JSON.stringify(couchCartParsed);
-      localStorage.setItem("couchCart", couchCartStringed);
     }
+    couchCartStringed = JSON.stringify(couchCartParsed);
+    localStorage.setItem("couchCart", couchCartStringed);
   } else {
     couchCart.push(couchAdd);
     couchCartStringed = JSON.stringify(couchCart);
