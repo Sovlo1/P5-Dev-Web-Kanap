@@ -188,12 +188,7 @@ loadPage();
 ////////////////////////FORMULAIRE////////////////////////////
 //////////////////////////////////////////////////////////////
 
-let firstName = document.getElementById("firstName");
-let lastName = document.getElementById("lastName");
-let address = document.getElementById("address");
-let city = document.getElementById("city");
-let email = document.getElementById("email");
-let emailRegex = /^[\.\-_0-9a-zçéèêëàâîïôùû]+@([a-zçéèêëàâîïôùû])+\.[a-z]+$/i;
+let emailRegex = /^[\.\-_0-9a-z]+@([a-z])+\.[a-z]+$/i;
 let firstNameRegex = /^([a-zçéèêëàâîïôùû]{2,})+([-][a-zçéèêëàâîïôùû]+)?$/i;
 let lastNameRegex = /^([a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëàâîïôùû]+)?$/i;
 let cityRegex = /^([a-zçéèêëàâîïôùû]{2,})+([\- ][a-zçéèêëàâîïôùû]+)*$/i;
@@ -202,6 +197,7 @@ let addressRegex = /^([0-9a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëà
 let order = document.getElementById("order");
 
 const checkFirstName = function () {
+  firstName = document.getElementById("firstName");
   firstNameValue = firstName.value;
   error = document.getElementById("firstNameErrorMsg");
   isValid = firstNameRegex.test(firstNameValue);
@@ -214,6 +210,7 @@ const checkFirstName = function () {
 };
 
 const checkLastName = function () {
+  lastName = document.getElementById("lastName");
   lastNameValue = lastName.value;
   error = document.getElementById("lastNameErrorMsg");
   isValid = lastNameRegex.test(lastNameValue);
@@ -226,6 +223,7 @@ const checkLastName = function () {
 };
 
 const checkAddress = function () {
+  address = document.getElementById("address");
   addressValue = address.value;
   error = document.getElementById("addressErrorMsg");
   isValid = addressRegex.test(addressValue);
@@ -238,6 +236,7 @@ const checkAddress = function () {
 };
 
 const checkCity = function () {
+  city = document.getElementById("city");
   cityValue = city.value;
   error = document.getElementById("cityErrorMsg");
   isValid = cityRegex.test(cityValue);
@@ -250,6 +249,7 @@ const checkCity = function () {
 };
 
 const checkEmail = function () {
+  email = document.getElementById("email");
   emailValue = email.value;
   error = document.getElementById("emailErrorMsg");
   isValid = emailRegex.test(emailValue);
@@ -261,10 +261,12 @@ const checkEmail = function () {
   return isValid;
 };
 
+let productList = [];
+
 let fillProductList = function () {
-  for (i = 0; i < storedCart.length; i += 1) {
-    productList.push(storedCart[i].couchName);
-  }
+    for (i = 0; i < storedCart.length; i += 1) {
+      productList.push(storedCart[i].couchName);
+    }
 };
 
 let fillClientCart = function () {
