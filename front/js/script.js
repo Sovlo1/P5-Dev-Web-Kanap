@@ -1,11 +1,11 @@
-//Fonction permettant de parser le json contenant la liste des produits
-const fetchProductList = async function () {
+//Fonction permettant de parser le json contenant la liste des produits.
+const getProductList = async function () {
   await fetch(`http://localhost:3000/api/products`)
     .then((res) => res.json())
     .then((fetched) => (products = fetched));
 };
 
-//Fonction permettant de donner des attributs aux variables créées ligne 6 à 10
+//Fonction permettant d'ajouter des éléments HTML à notre page d'accueil.
 const createProductCard = function () {
   mainContainer = document.getElementById("items");
   link = document.createElement("a");
@@ -20,7 +20,8 @@ const createProductCard = function () {
   flexContainer.appendChild(productDescription);
 };
 
-const productCardInfo = function () {
+//Fonction permettant de remplir nos éléments HTML créés précédemment avec les informations contenus dans l'API.
+const fillProductCardInfo = function () {
   link.href = `./product.html?id=${products[i]._id}`;
   productImage.src = products[i].imageUrl;
   productImage.alt = products[i].altTxt;
@@ -30,14 +31,14 @@ const productCardInfo = function () {
   productDescription.classList.add("productDescription");
 };
 
-//Fonction permettant de remplir notre page d'accueil grace aux donnéees de l'API et réutilisant
-//toutes les fonctions créées jusqu'alors
-const productList = async function () {
-  await fetchProductList();
+//Fonction appelant toutes les fonctions créées jusqu'alors...
+const createProductList = async function () {
+  await getProductList();
   for (i = 0; i < products.length; i += 1) {
     createProductCard();
-    productCardInfo();
+    fillProductCardInfo();
   }
 };
 
-productList();
+//...et qui s'éxécute au lancement de la page.
+createProductList();

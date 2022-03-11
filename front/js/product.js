@@ -10,7 +10,7 @@ let addToCart = document.getElementById("addToCart");
 let quantity = document.getElementById("quantity");
 let colors = document.getElementById("colors");
 
-const product = async function () {
+const getProduct = async function () {
   await fetch(`http://localhost:3000/api/products/${id}`)
     .then((res) => res.json())
     .then((fetched) => (fetchedProduct = fetched));
@@ -23,7 +23,7 @@ const addProductImage = function () {
   productImage.alt = fetchedProduct.altTxt;
 };
 
-const productColors = function () {
+const addProductColors = function () {
   for (i = 0; i < fetchedProduct.colors.length; i += 1) {
     let productColors = document.createElement("option");
     colorsContainer.append(productColors);
@@ -32,20 +32,20 @@ const productColors = function () {
   }
 };
 
-const productText = function () {
+const fillProductText = function () {
   productName.textContent = fetchedProduct.name;
   productPrice.textContent = (fetchedProduct.price / 10).toFixed(2);
   productDescription.textContent = fetchedProduct.description;
 };
 
-const productInfo = async function () {
-  await product();
+const createProductInfo = async function () {
+  await getProduct();
   addProductImage();
-  productColors();
-  productText();
+  addProductColors();
+  fillProductText();
 };
 
-productInfo();
+createProductInfo();
 
 let couchCart = [];
 
@@ -60,19 +60,12 @@ const populateStorage = function () {
 };
 
 //Fonction qui ajoute les données du localstorage à l'objet couchAdd
-const couchObj = function () {
+const fillCouchObject = function () {
   couchAdd = {
     couchName: couchName,
     couchQuantity: couchQuantity,
     couchColor: couchColor,
   };
-};
-
-//Fonction qui vérifie que les données de couchAdd sont valides et pousse l'objet dans couchCart
-const checkCouchValid = function () {
-  if (couchAdd.couchQuantity > 0 && couchAdd.couchColor !== "") {
-    addCouchTotal();
-  }
 };
 
 const addCouchTotal = function () {
@@ -102,8 +95,15 @@ const addCouchTotal = function () {
   }
 };
 
+//Fonction qui vérifie que les données de couchAdd sont valides et pousse l'objet dans couchCart
+const checkCouchValidity = function () {
+  if (couchAdd.couchQuantity > 0 && couchAdd.couchColor !== "") {
+    addCouchTotal();
+  }
+};
+
 addToCart.addEventListener("click", function () {
   populateStorage();
-  couchObj();
-  checkCouchValid();
+  fillCouchObject();
+  checkCouchValidity();
 });
