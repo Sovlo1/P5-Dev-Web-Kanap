@@ -20,7 +20,8 @@ const createProductCard = function () {
   flexContainer.appendChild(productDescription);
 };
 
-//Fonction permettant de remplir nos éléments HTML créés précédemment avec les informations contenus dans l'API.
+//Fonction permettant de remplir nos éléments HTML créés précédemment
+//avec les informations contenus dans l'API.
 const fillProductCardInfo = function () {
   link.href = `./product.html?id=${products[i]._id}`;
   productImage.src = products[i].imageUrl;
