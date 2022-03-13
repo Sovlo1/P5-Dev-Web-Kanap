@@ -57,28 +57,32 @@ createProductInfo();
 //Tableau qui contiendra le ou les produits qui sont déja présents dans le panier ou qui seront ajoutés
 let couchCart = [];
 
-//Fonction qui ajoute les données du canapé choisi au localstorage
-const populateStorage = function () {
-  quantity = document.getElementById("quantity");
-  colors = document.getElementById("colors");
-  localStorage.setItem("product", id);
-  localStorage.setItem("quantity", quantity.value);
-  localStorage.setItem("color", colors.value);
-  couchName = localStorage.getItem("product");
-  couchQuantity = +localStorage.getItem("quantity");
-  couchColor = localStorage.getItem("color");
+//Fonction permettant d'attribuer aux variables qui constitueront l'objet couchAdd des valeurs
+const fillCouchInfos = function () {
+  couchName = id;
+  couchQuantity = parseInt(quantity.value, 10);
+  couchColor = colors.value;
 };
 
 //Fonction qui ajoute les données du localstorage à l'objet couchAdd
-const fillCouchObject = function () {
-  couchAdd = {
+const createCouchObject = function () {
+  couchItem = {
     couchName: couchName,
     couchQuantity: couchQuantity,
     couchColor: couchColor,
   };
 };
 
-//Fonction permettant d'ajouter l'objet couchAdd 
+//Fonction qui vérifie que les données de couchAdd sont valides et pousse l'objet dans couchCart
+const checkCouchValidity = function () {
+  //On vérifie que l'utilisateur n'essaye pas d'ajouter un nombre inférieur à 1 d'un produit
+  //et possédant une couleur
+  if (couchItem.couchQuantity > 0 && couchItem.couchColor !== "") {
+    addCouchTotal();
+  }
+};
+
+//Fonction permettant d'ajouter l'objet couchAdd
 const addCouchTotal = function () {
   //Si un panier est déja présent dans le localStorage
   if (localStorage.getItem("couchCart")) {
@@ -88,8 +92,8 @@ const addCouchTotal = function () {
     //non dans le panier
     const existingItem = couchCartParsed.find(function (cartItem) {
       if (
-        cartItem.couchName === couchAdd.couchName &&
-        cartItem.couchColor === couchAdd.couchColor
+        cartItem.couchName === couchItem.couchName &&
+        cartItem.couchColor === couchItem.couchColor
       ) {
         return true;
       } else {
@@ -99,35 +103,26 @@ const addCouchTotal = function () {
     //Si il est déja présent, on incrémente la quantité de ce même produit
     if (existingItem) {
       existingItem.couchQuantity += couchQuantity;
-    //Sinon on l'ajoute au panier
+      //Sinon on l'ajoute au panier
     } else {
-      couchCartParsed.push(couchAdd);
+      couchCartParsed.push(couchItem);
     }
     //Puis on stringify le panier...
     couchCartStringed = JSON.stringify(couchCartParsed);
     //...avant de le remettre dans notre localStorage
     localStorage.setItem("couchCart", couchCartStringed);
-  //Sinon on ajoute un panier contenant le produit qu'on veut ajouter
+    //Sinon on ajoute un panier contenant le produit qu'on veut ajouter
   } else {
-    couchCart.push(couchAdd);
+    couchCart.push(couchItem);
     couchCartStringed = JSON.stringify(couchCart);
     localStorage.setItem("couchCart", couchCartStringed);
-  }
-};
-
-//Fonction qui vérifie que les données de couchAdd sont valides et pousse l'objet dans couchCart
-const checkCouchValidity = function () {
-  //On vérifie que l'utilisateur n'essaye pas d'ajouter un nombre inférieur à 1 d'un produit
-  //et possédant une couleur
-  if (couchAdd.couchQuantity > 0 && couchAdd.couchColor !== "") {
-    addCouchTotal();
   }
 };
 
 //Event listener sur le bouton "ajouter au panier" qui utilise les 3 dernières fonctions
 //que nous avons créé
 addToCart.addEventListener("click", function () {
-  populateStorage();
-  fillCouchObject();
+  fillCouchInfos();
+  createCouchObject();
   checkCouchValidity();
 });

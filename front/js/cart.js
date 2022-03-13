@@ -314,7 +314,7 @@ let fillOrderValidation = function () {
 const completeOrder = async function () {
   await fetch("http://localhost:3000/api/products/order", orderValidation)
     .then((res) => res.json())
-    //Nous permet de stocker la réponse de l'api dans une variable storeId
+    //Nous permet de stocker la réponse de l'api dans une variable storedId
     .then((storeId) => (storedId = storeId));
 };
 
