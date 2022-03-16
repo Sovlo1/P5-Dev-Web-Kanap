@@ -203,6 +203,14 @@ let addressRegex = /^([0-9a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëà
 //Variable indiquant l'emplacement d'un bouton sur lequel on ajoutera un event listener
 let order = document.getElementById("order");
 
+//Fonction servant à supprimer les messages d'erreur du formulaire
+const clearForm = function() {
+  let formInputs = document.querySelectorAll(".cart__order__form__question p")
+  for (i = 0; i < formInputs.length; i += 1) {
+    formInputs[i].textContent = ""
+  }
+}
+
 //Fonction pour vérifier la validité du prénom saisi
 const checkFirstName = function () {
   firstName = document.getElementById("firstName");
@@ -320,6 +328,7 @@ const completeOrder = async function () {
 
 //Event listener du bouton "commander" qui réutilise toutes les fonctions créées dans la partie formulaire
 order.addEventListener("click", async function (e) {
+  clearForm();
   e.preventDefault();
   //Nous permet de vérifier la validité de l'intégralité des données utilisateurs, si un élément n'est pas valide
   //il ne sera pas possible de procéder à la suite de la fonction

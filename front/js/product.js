@@ -55,7 +55,7 @@ const createProductInfo = async function () {
 createProductInfo();
 
 //Tableau qui contiendra le ou les produits qui sont déja présents dans le panier ou qui seront ajoutés
-let couchCart = [];
+// let couchCart;
 
 //Fonction permettant d'attribuer aux variables qui constitueront l'objet couchAdd des valeurs
 const fillCouchInfos = function () {
@@ -84,12 +84,16 @@ const checkCouchValidity = function () {
 
 //Fonction permettant d'ajouter l'objet couchAdd
 const addCouchTotal = function () {
-  //Si un panier est déja présent dans le localStorage
-  if (localStorage.getItem("couchCart")) {
-    //On parse les données du panier
-    const couchCartParsed = JSON.parse(localStorage.getItem("couchCart"));
-    //Puis on cherche si le produit qu'on essaye d'ajouter est présent ou
+  //On déclare un panier vide
+  let couchCartParsed = [];
+  //Si un panier n'est pas présent dans le localSotrage
+  if (!localStorage.getItem("couchCart")) {
+    //On ajoute à notre panier vide notre produit
+    couchCartParsed.push(couchItem);
+    //Sinon on parse notre panier et on vérifie si notre produit est présent ou
     //non dans le panier
+  } else {
+    couchCartParsed = JSON.parse(localStorage.getItem("couchCart"));
     const existingItem = couchCartParsed.find(function (cartItem) {
       if (
         cartItem.couchName === couchItem.couchName &&
@@ -100,23 +104,17 @@ const addCouchTotal = function () {
         return false;
       }
     });
-    //Si il est déja présent, on incrémente la quantité de ce même produit
+    //Si il est présent on incrémente sa quantité
     if (existingItem) {
       existingItem.couchQuantity += couchQuantity;
       //Sinon on l'ajoute au panier
     } else {
       couchCartParsed.push(couchItem);
     }
-    //Puis on stringify le panier...
-    couchCartStringed = JSON.stringify(couchCartParsed);
-    //...avant de le remettre dans notre localStorage
-    localStorage.setItem("couchCart", couchCartStringed);
-    //Sinon on ajoute un panier contenant le produit qu'on veut ajouter
-  } else {
-    couchCart.push(couchItem);
-    couchCartStringed = JSON.stringify(couchCart);
-    localStorage.setItem("couchCart", couchCartStringed);
   }
+  //Puis on stringify notre panier et on le remet dans notre localStorage
+  couchCartStringed = JSON.stringify(couchCartParsed);
+  localStorage.setItem("couchCart", couchCartStringed);
 };
 
 //Event listener sur le bouton "ajouter au panier" qui utilise les 3 dernières fonctions
