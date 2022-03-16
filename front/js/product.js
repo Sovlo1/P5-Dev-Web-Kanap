@@ -54,9 +54,6 @@ const createProductInfo = async function () {
 //...et qui se lance au chargement de la page
 createProductInfo();
 
-//Tableau qui contiendra le ou les produits qui sont déja présents dans le panier ou qui seront ajoutés
-// let couchCart;
-
 //Fonction permettant d'attribuer aux variables qui constitueront l'objet couchAdd des valeurs
 const fillCouchInfos = function () {
   couchName = id;
