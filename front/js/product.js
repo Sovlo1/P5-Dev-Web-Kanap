@@ -93,11 +93,11 @@ const addCouchTotal = function () {
     couchCartParsed = JSON.parse(localStorage.getItem("couchCart"));
     existingItem = couchCartParsed.find(function (cartItem) {
       return (
-        (cartItem.couchName === couchItem.couchName) &&
-        (cartItem.couchColor === couchItem.couchColor)
+        cartItem.couchName === couchItem.couchName &&
+        cartItem.couchColor === couchItem.couchColor
       );
     });
-    console.log(existingItem)
+    //Si il est présent on incrémente sa quantité
     if (existingItem !== undefined) {
       existingItem.couchQuantity += couchQuantity;
       //Sinon on l'ajoute au panier
@@ -117,29 +117,3 @@ addToCart.addEventListener("click", function () {
   createCouchObject();
   checkCouchValidity();
 });
-
-// let existingItem = couchCartParsed.find(function (cartItem) {
-//   if (existingItem !== cartItem) {
-//     couchCartParsed.push(couchItem)
-//   } else {
-//     existingItem.couchQuantity += couchQuantity
-//   }
-
-// const existingItem = couchCartParsed.find(function (cartItem) {
-//   if (
-// cartItem.couchName === couchItem.couchName &&
-// cartItem.couchColor === couchItem.couchColor
-//   ) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// });
-// //Si il est présent on incrémente sa quantité
-// console.log(existingItem)
-// if (existingItem) {
-//   existingItem.couchQuantity += couchQuantity;
-//   //Sinon on l'ajoute au panier
-// } else {
-//   couchCartParsed.push(couchItem);
-// }
