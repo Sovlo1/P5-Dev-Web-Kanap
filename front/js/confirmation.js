@@ -4,6 +4,6 @@ let params = new URLSearchParams(document.location.search);
 let id = params.get("id");
 
 //On pointe l'élément html dans lequel on affichera notre id de commande
-let orderId = document.getElementById("orderId")
+let orderId = document.getElementById("orderId");
 //On met en texte l'id de commande dans cet élément html
-orderId.textContent = id
+orderId.textContent = id;
