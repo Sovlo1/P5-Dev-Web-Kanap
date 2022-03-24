@@ -18,11 +18,16 @@ const checkStoredCart = function () {
   }
 };
 
+//Variable qui contiendra les données récupérées après le fetch de chaque élément du panier
+let fetchList = [];
+
 //Fonction qui sera appelée plus tard et permettant de récupérer les données d'un ou plusieurs produits dans un tableau
 const getProduct = async function () {
   await fetch(`http://localhost:3000/api/products/${storedCart[i].couchName}`)
     .then((res) => res.json())
-    .then((fetched) => (fetchedProduct = fetched));
+    .then((fetched) => (fetchedProduct = fetched))
+    .then(() => fetchList.push(fetchedProduct))
+    .catch((error) => error.json({ error }));
 };
 
 //Fonction qui créé un article correspondant à un produit présent dans le panier
@@ -121,12 +126,13 @@ const fillDeleteItemSettings = function (storedItem) {
       `[data-id="${storedItem.couchName}"][data-color="${storedItem.couchColor}"]`
     );
     itemToRemove.remove();
-    updatedStoredCart = storedCart.filter(
+    cartItemToRemove = storedCart.findIndex(
       (item) =>
-        item.couchName != storedItem.couchName ||
-        item.couchColor != storedItem.couchColor
+        item.couchName == storedItem.couchName &&
+        item.couchColor == storedItem.couchColor
     );
-    storedCart = updatedStoredCart;
+    storedCart.splice(cartItemToRemove, 1);
+    fetchList.splice(cartItemToRemove, 1);
     storedCartStringed = JSON.stringify(storedCart);
     localStorage.setItem("couchCart", storedCartStringed);
     updateTotalQuantity();
@@ -170,8 +176,7 @@ const updateTotalPrice = async function () {
     totalPrice.textContent = 0;
   } else {
     for (i = 0; i < storedCart.length; i += 1) {
-      await getProduct();
-      price = storedCart[i].couchQuantity * fetchedProduct.price;
+      price = storedCart[i].couchQuantity * fetchList[i].price;
       priceFull += price;
       totalPrice.textContent = (parseFloat(priceFull, 10) / 10).toFixed(2);
     }
@@ -204,12 +209,12 @@ let addressRegex = /^([0-9a-zçéèêëàâîïôùû]{2,})+([ ][a-zçéèêëà
 let order = document.getElementById("order");
 
 //Fonction servant à supprimer les messages d'erreur du formulaire
-const clearForm = function() {
-  let formInputs = document.querySelectorAll(".cart__order__form__question p")
+const clearForm = function () {
+  let formInputs = document.querySelectorAll(".cart__order__form__question p");
   for (i = 0; i < formInputs.length; i += 1) {
-    formInputs[i].textContent = ""
+    formInputs[i].textContent = "";
   }
-}
+};
 
 //Fonction pour vérifier la validité du prénom saisi
 const checkFirstName = function () {
@@ -291,7 +296,7 @@ let fillProductList = function () {
   }
 };
 
-//Fonction qui va compléter les données de l'objet clientCart et contenant 
+//Fonction qui va compléter les données de l'objet clientCart et contenant
 //les infos utilisateur ainsi que la liste des produits à acheter
 let fillClientCart = function () {
   clientCart = {
