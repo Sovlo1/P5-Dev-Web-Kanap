@@ -27,7 +27,7 @@ const getProduct = async function () {
     .then((res) => res.json())
     .then((fetched) => (fetchedProduct = fetched))
     .then(() => fetchList.push(fetchedProduct))
-    .catch((error) => error.json({ error }));
+    .catch(() => console.log("There was an error"));
 };
 
 //Fonction qui créé un article correspondant à un produit présent dans le panier
@@ -290,7 +290,7 @@ const checkEmail = function () {
 let productList = [];
 
 //Fonction servant à pousser les produits à acheter dans le tableau déclaré juste avant
-let fillProductList = function () {
+const fillProductList = function () {
   for (i = 0; i < storedCart.length; i += 1) {
     productList.push(storedCart[i].couchName);
   }
@@ -298,7 +298,7 @@ let fillProductList = function () {
 
 //Fonction qui va compléter les données de l'objet clientCart et contenant
 //les infos utilisateur ainsi que la liste des produits à acheter
-let fillClientCart = function () {
+const fillClientCart = function () {
   clientCart = {
     contact: {
       firstName: firstName.value,

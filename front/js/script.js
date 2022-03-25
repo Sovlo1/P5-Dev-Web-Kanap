@@ -2,7 +2,8 @@
 const getProductList = async function () {
   await fetch(`http://localhost:3000/api/products`)
     .then((res) => res.json())
-    .then((fetched) => (products = fetched));
+    .then((fetched) => (products = fetched))
+    .catch(() => console.log("There was an error"));
 };
 
 //Fonction permettant d'ajouter des éléments HTML à notre page d'accueil.

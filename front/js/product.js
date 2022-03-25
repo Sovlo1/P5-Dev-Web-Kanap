@@ -10,7 +10,8 @@ let addToCart = document.getElementById("addToCart");
 const getProduct = async function () {
   await fetch(`http://localhost:3000/api/products/${id}`)
     .then((res) => res.json())
-    .then((fetched) => (fetchedProduct = fetched));
+    .then((fetched) => (fetchedProduct = fetched))
+    .catch(() => console.log("There was an error"));
 };
 
 //Fonction nous permettant d'ajouter l'image du produit à notre document html
