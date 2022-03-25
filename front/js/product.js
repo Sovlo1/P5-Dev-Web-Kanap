@@ -5,6 +5,8 @@ let id = params.get("id");
 
 //Pointe le bouton "ajouter au panier" sur lequel nous viendrons mettre un event listener
 let addToCart = document.getElementById("addToCart");
+//Pointe l'input qui nous permettra de choisir le nombre d'un même produit que l'on veut ajouter au panier
+let quantity = document.getElementById("quantity")
 
 //Fonction nous permettant de récupérer dans l'API les données du produit correspondant à l'id stockée
 const getProduct = async function () {
